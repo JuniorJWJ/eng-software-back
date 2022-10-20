@@ -69,9 +69,34 @@ module.exports = {
 
       await db.close()
     },
-    async return_info(userEmail){
+    async return_info(userEmail, includesPassword){
         const db = await Database()
         const data = await db.all(`SELECT * FROM user WHERE email = "${userEmail}" `)
+        let user = {}
+        // console.log(data)
+        await db.close()
+        if(includesPassword){
+            user  = data.map( user =>({ 
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                avatar: user.avatar,
+                password: user.password
+            }))
+        }else{
+            user = data.map( user =>({ 
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                avatar: user.avatar
+            }))  
+        }
+        return user
+
+    },
+    async show(userID){
+        const db = await Database()
+        const data = await db.all(`SELECT * FROM user WHERE id = "${userID}" `)
         console.log(data)
         await db.close()
 
@@ -80,20 +105,6 @@ module.exports = {
             name: user.name,
             email: user.email,
             avatar: user.avatar
-        }))
-    },
-    async show(userEmail){
-        const db = await Database()
-        const data = await db.all(`SELECT * FROM user WHERE email = "${userEmail}" `)
-        console.log(data)
-        await db.close()
-
-        return data.map( user =>({ 
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            avatar: user.avatar,
-            password: user.password
         }))
     },
 }

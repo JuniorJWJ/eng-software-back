@@ -25,7 +25,8 @@ module.exports = {
   },
   async log_user(req, res) {
     const userEmail = req.body.email
-    const user = await User.show(userEmail)
+    const user = await User.return_info(userEmail, true)
+    let dados = await User.return_info(userEmail, false)
 
     if(user == null || user.length === 0){
         console.log("entrou")
@@ -46,7 +47,8 @@ module.exports = {
     return res.json({
         erro: false,
         mensagem: "Login realizado com sucesso!",
-        token
+        token,
+        dados
     });
   },
   async show_users(req, res){
