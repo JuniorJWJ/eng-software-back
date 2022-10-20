@@ -1,7 +1,7 @@
 const Database = require('../db/config')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const yup = require('yup')
+const uuid = require('uuid');
 
 module.exports = {
     async get(){
@@ -17,89 +17,37 @@ module.exports = {
             avatar: user.avatar
         }))
     },
-    // async create(newUser){
-    //     const db = await Database()
-    //     const data = await db.all(`SELECT email FROM user WHERE email = "${newUser.email}"`)
-        
-    //     if(data.length == 0){
-    //         try {
-    //             const db = await Database()
-    
-    //             await db.run(`INSERT INTO user (
-    //                 name,
-    //                 email,
-    //                 password, 
-    //                 avatar
-    //             ) VALUES (
-    //                 "${newUser.name}",
-    //                 "${newUser.email}",
-    //                 "${newUser.password}",
-    //                 "${newUser.avatar}"
-    //             )`)
-    //             await db.close()
-    //         } catch (error) {
-    //             console.log(error);
-    //         }
-    //     }else{
-    //         console.log("já existe um usuário com esse email")
-    //         console.log(error);
-    //     }
-
-        
-    // },
     async create(newUser){
-        console.log(newUser)
-        // const db = await Database()
-        // const data = await db.all(`SELECT email FROM user WHERE email = "${newUser.email}"`)
-        const schema = yup.object().shape({
-            password: yup.string("Erro: Necessário preencher o campo senha!")
-              .required("Erro: Necessário preencher o campo senha!")
-              .min(8, "Erro: A senha deve ter no mínimo 6 caracteres!"),
-            email: yup.string("Erro: Necessário preencher o campo e-mail!")
-              .required("Erro: Necessário preencher o campo e-mail!")
-              .email("Erro: Necessário preencher o campo com e-mail válido!"),
-            name: yup.string("Erro: Necessário preencher o campo nome!")
-              .required("Erro: Necessário preencher o campo nome!")
-          });
-        try{
-            console.log("oi")
-            await schema.validate(newUser)
-        }catch(err){
-            console.log(err)
-            return res.status(400).json({
-                erro: true,
-                message: err.message,
-                errors: err.errors
-              })
-        }
-        return res.json({
-            erro: false,
-            mensagem: "Dados corretos!"
-          });
-          
-        // if(data.length == 0){
-        //     try {
-        //         const db = await Database()
+        const db = await Database()
+        const data = await db.all(`SELECT email FROM user WHERE email = "${newUser.email}"`)
+
+        const uniqeId = uuid.v4();
+
+        if(data.length == 0){
+            try {
+                const db = await Database()
     
-        //         await db.run(`INSERT INTO user (
-        //             name,
-        //             email,
-        //             password, 
-        //             avatar
-        //         ) VALUES (
-        //             "${newUser.name}",
-        //             "${newUser.email}",
-        //             "${newUser.password}",
-        //             "${newUser.avatar}"
-        //         )`)
-        //         await db.close()
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        // }else{
-        //     console.log("já existe um usuário com esse email")
-        //     console.log(error);
-        // }
+                await db.run(`INSERT INTO user (
+                    id,
+                    name,
+                    email,
+                    password, 
+                    avatar
+                ) VALUES (
+                    "${uniqeId}",
+                    "${newUser.name}",
+                    "${newUser.email}",
+                    "${newUser.password}",
+                    "${newUser.avatar}"
+                )`)
+                await db.close()
+            } catch (error) {
+                console.log(error);
+            }
+        }else{
+            console.log("já existe um usuário com esse email")
+            console.log(error);
+        }  
     },
     async delete(id){
         const db = await Database()

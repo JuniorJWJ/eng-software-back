@@ -5,7 +5,7 @@ const initDb = {
         const db = await Database()
 
         await db.exec(`CREATE TABLE user (
-            id INTEGER PRIMARY KEY,
+            id varchar PRIMARY KEY,
             name varchar(255) NOT NULL,
             email varchar(255) NOT NULL,
             password varchar(255) NULL,

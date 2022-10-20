@@ -25,7 +25,7 @@ module.exports = {
   },
   async log_user(req, res) {
     const userEmail = req.body.email
-    const user = await User.return_info(userEmail)
+    const user = await User.show(userEmail)
 
     if(user == null || user.length === 0){
         console.log("entrou")
