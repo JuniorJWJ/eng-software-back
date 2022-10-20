@@ -17,24 +17,33 @@ module.exports = {
         }))
     },
     async create(newUser){
-        try {
-            const db = await Database()
-
-            await db.run(`INSERT INTO user (
-                name,
-                email,
-                password, 
-                avatar
-            ) VALUES (
-                "${newUser.name}",
-                "${newUser.email}",
-                "${newUser.password}",
-                "${newUser.avatar}"
-            )`)
-            await db.close()
-        } catch (error) {
+        const db = await Database()
+        const data = await db.all(`SELECT email FROM user WHERE email = "${newUser.email}"`)
+        if(data.length == 0){
+            try {
+                const db = await Database()
+    
+                await db.run(`INSERT INTO user (
+                    name,
+                    email,
+                    password, 
+                    avatar
+                ) VALUES (
+                    "${newUser.name}",
+                    "${newUser.email}",
+                    "${newUser.password}",
+                    "${newUser.avatar}"
+                )`)
+                await db.close()
+            } catch (error) {
+                console.log(error);
+            }
+        }else{
+            console.log("já existe um usuário com esse email")
             console.log(error);
         }
+
+        
     },
     async delete(id){
         const db = await Database()
