@@ -25,7 +25,7 @@ module.exports = {
   },
   async log_user(req, res) {
     const userEmail = req.body.email
-    const user = await User.show(userEmail)
+    const user = await User.return_info(userEmail)
 
     if(user == null || user.length === 0){
         console.log("entrou")
@@ -54,7 +54,7 @@ module.exports = {
         return res.json({
             erro: false,
             users,
-            // id_usuario_logado: req.userId
+            id_usuario_logado: req.userId
         });
     }).catch(() => {
         return res.status(400).json({
