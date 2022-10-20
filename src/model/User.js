@@ -79,13 +79,12 @@ module.exports = {
             id: user.id,
             name: user.name,
             email: user.email,
-            avatar: user.avatar,
-            password: user.password
+            avatar: user.avatar
         }))
     },
-    async show(userID){
+    async show(userEmail){
         const db = await Database()
-        const data = await db.all(`SELECT * FROM user WHERE id = "${userID}" `)
+        const data = await db.all(`SELECT * FROM user WHERE email = "${userEmail}" `)
         console.log(data)
         await db.close()
 
@@ -93,7 +92,8 @@ module.exports = {
             id: user.id,
             name: user.name,
             email: user.email,
-            avatar: user.avatar
+            avatar: user.avatar,
+            password: user.password
         }))
     },
 }
