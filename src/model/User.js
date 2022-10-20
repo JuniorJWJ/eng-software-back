@@ -9,7 +9,12 @@ module.exports = {
 
         await db.close()
 
-        return data.map( user => user);
+        return data.map( user =>({ 
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar
+        }))
     },
     async create(newUser){
         try {
@@ -51,17 +56,17 @@ module.exports = {
 
       await db.close()
     },
-    async show(userEmail){
+    async show(idEmail){
         const db = await Database()
-        const data = await db.all(`SELECT * FROM user WHERE email = "${userEmail}" `)
-
+        const data = await db.all(`SELECT * FROM user WHERE id = "${idEmail}" `)
+        console.log(data)
         await db.close()
 
         return data.map( user =>({ 
             id: user.id,
             name: user.name,
-            password: user.password,
             email: user.email,
+            avatar: user.avatar
         }))
     },
 }

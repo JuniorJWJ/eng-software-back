@@ -9,7 +9,7 @@ module.exports = {
       name: req.body.name,
       password: await bcrypt.hash( req.body.password, 8), 
       email: req.body.email,
-      avatar: req.body.avatar
+      avatar: req.file ? `http://localhost:3000/images/${req.file.filename}` : ''
     })
     .then(() => {
         return res.json({
@@ -41,8 +41,6 @@ module.exports = {
         });
     }
     var token = jwt.sign({id: user.id}, "D62ST92Y7A6V7K5C6W9ZU6W8KS3", {
-        //expiresIn: 600 //10 min
-        //expiresIn: 60 //1 min
         expiresIn: '30m' // 7 dia
     });
     return res.json({
@@ -53,6 +51,22 @@ module.exports = {
   },
   async show_users(req, res){
     await User.get().then((users) => {
+        return res.json({
+            erro: false,
+            users,
+            // id_usuario_logado: req.userId
+        });
+    }).catch(() => {
+        return res.status(400).json({
+            erro: true,
+            mensagem: "Erro: Nenhum usuário encontrado!"
+        });
+    });    
+  },
+  async show(req, res){
+    const userId = req.params.id
+
+    await User.show(userId).then((users) => {
         return res.json({
             erro: false,
             users,
