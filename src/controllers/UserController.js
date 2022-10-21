@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 module.exports = {
   async create(req, res) {
     await User.create({
-      name: req.body.fullName,
+      name: req.body.name,
       password: await bcrypt.hash( req.body.password, 8), 
       email: req.body.email,
       avatar: req.file ? `http://localhost:3000/images/${req.file.filename}` : ''
