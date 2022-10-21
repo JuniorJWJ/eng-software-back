@@ -98,9 +98,12 @@ module.exports = {
         name: req.body.name,
         password: await bcrypt.hash( req.body.password, 8), 
         email: req.body.email,
-        avatar: req.body.avatar
+        avatar: req.file ? `http://localhost:3000/images/${req.file.filename}` : ''
     }
-
+    if(!updatedUser.avatar){
+      var userBDteste = await User.show(userID)
+      updatedUser.avatar = userBDteste[0].avatar
+    }
     try{
       await User.update(updatedUser, userID)
       res.status(201).json({msg: 'User update sucessfully'})
