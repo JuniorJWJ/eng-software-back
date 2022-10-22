@@ -29,13 +29,12 @@ module.exports = {
     let dados = await User.return_info(userEmail, false)
 
     if(user == null || user.length === 0){
-        console.log("entrou")
         return res.status(400).json({
             erro: true,
             mensagem: "Erro: Usuário ou a senha incorreta! Nenhum usuário com este e-mail"
         });
     }
-    if(!(await bcrypt.compare(req.body.password, user[0].password))){
+    if(!(await bcrypt.compare(req.body.password, user.password))){
         return res.status(400).json({
             erro: true,
             mensagem: "Erro: Usuário ou a senha incorreta! Senha incorreta!"
@@ -48,7 +47,7 @@ module.exports = {
         erro: false,
         mensagem: "Login realizado com sucesso!",
         token,
-        dados
+        ...dados
     });
   },
   async show_users(req, res){
@@ -71,7 +70,7 @@ module.exports = {
     await User.show(userId).then((users) => {
         return res.json({
             erro: false,
-            users,
+            ...users,
             id_usuario_logado: req.userId
         });
     }).catch(() => {
