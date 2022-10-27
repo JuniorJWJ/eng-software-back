@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "start": "node . & node src/db/init.js",
+    "start": "node .",
     "dev": "nodemon .",
     "init-db": "node src/db/init.js"
   },
