@@ -1,6 +1,6 @@
 const express = require('express');
 
-const userController = require('./controllers/userController');
+const userController = require('./controllers/UserController');
 
 const { eAdmin } = require('../middlewares/auth');
 const multer = require("multer");
