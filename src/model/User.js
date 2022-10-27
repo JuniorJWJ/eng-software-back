@@ -62,17 +62,28 @@ module.exports = {
     await db.run(`UPDATE user SET
         name = "${updatedUser.name}",
         email = "${updatedUser.email}",
-        password = "${updatedUser.password}",
         avatar = "${updatedUser.avatar}"
         WHERE id = ${userId}
       `);
 
     await db.close();
   },
+  async update_password(updatedUser, userId) {
+    const db = await Database();
+
+    await db.run(`UPDATE user SET
+        password = "${updatedUser.password}"
+        WHERE id = ${userId}
+      `);
+
+    await db.close();
+
+    await db.close();
+  },
   async return_info(userEmail, includesPassword) {
     const db = await Database();
     const data = await db.all(
-      `SELECT * FROM user WHERE email = "${userEmail}" `
+      `SELECT * FROM user WHERE email = "${userEmail}"`
     );
     await db.close();
 

@@ -95,7 +95,6 @@ module.exports = {
 
     var updatedUser = {
         name: req.body.name,
-        password: await bcrypt.hash( req.body.password, 8), 
         email: req.body.email,
         avatar: req.file ? `http://localhost:3000/images/${req.file.filename}` : ''
     }
@@ -109,6 +108,24 @@ module.exports = {
     } catch (error) {
       res.status(500).json({msg: 'Fail in Server '})
       console.log(error)
+    }
+  },
+  async update_password(req, res){
+    const userID = req.params.id
+    if(req.body.password === req.body.confirmPassword){
+      var updatedUser = {
+        password: await bcrypt.hash( req.body.password, 8)
+      }
+
+      try{
+        await User.update_password(updatedUser, userID)
+        res.status(201).json({msg: 'User password update sucessfully'})
+      } catch (error) {
+        res.status(500).json({msg: 'Fail in Server '})
+        console.log(error)
+      }
+    }else{
+      res.status(500).json({msg: 'Passwords not matched.'})
     }
   }
 }
