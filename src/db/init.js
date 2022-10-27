@@ -1,10 +1,10 @@
-const Database = require("./config")
+const Database = require("./config");
 
 const initDb = {
-    async init(){
-        const db = await Database()
+  async init() {
+    const db = await Database();
 
-        await db.exec(`CREATE TABLE user (
+    await db.exec(`CREATE TABLE user (
             id varchar PRIMARY KEY,
             name varchar(255) NOT NULL,
             email varchar(255) NOT NULL,
@@ -12,11 +12,8 @@ const initDb = {
             avatar varchar(255) NOT NULL
         )`);
 
-        await db.close()
-    }
-}
+    await db.close();
+  },
+};
 
 initDb.init();
-
-
-
