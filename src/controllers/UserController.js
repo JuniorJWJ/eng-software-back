@@ -1,4 +1,4 @@
-const User = require('../model/user')
+const User = require('../model/User')
 const { eAdmin } = require('../../middlewares/auth');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -29,13 +29,12 @@ module.exports = {
     let dados = await User.return_info(userEmail, false)
 
     if(user == null || user.length === 0){
-        console.log("entrou")
         return res.status(400).json({
             erro: true,
             mensagem: "Erro: Usuário ou a senha incorreta! Nenhum usuário com este e-mail"
         });
     }
-    if(!(await bcrypt.compare(req.body.password, user[0].password))){
+    if(!(await bcrypt.compare(req.body.password, user.password))){
         return res.status(400).json({
             erro: true,
             mensagem: "Erro: Usuário ou a senha incorreta! Senha incorreta!"
@@ -48,7 +47,7 @@ module.exports = {
         erro: false,
         mensagem: "Login realizado com sucesso!",
         token,
-        dados
+        ...dados
     });
   },
   async show_users(req, res){
@@ -71,7 +70,7 @@ module.exports = {
     await User.show(userId).then((users) => {
         return res.json({
             erro: false,
-            users,
+            ...users,
             id_usuario_logado: req.userId
         });
     }).catch(() => {
@@ -98,9 +97,12 @@ module.exports = {
         name: req.body.name,
         password: await bcrypt.hash( req.body.password, 8), 
         email: req.body.email,
-        avatar: req.body.avatar
+        avatar: req.file ? `http://localhost:3000/images/${req.file.filename}` : ''
     }
-
+    if(!updatedUser.avatar){
+      var userBDteste = await User.show(userID)
+      updatedUser.avatar = userBDteste[0].avatar
+    }
     try{
       await User.update(updatedUser, userID)
       res.status(201).json({msg: 'User update sucessfully'})
