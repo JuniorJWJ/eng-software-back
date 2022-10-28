@@ -87,7 +87,7 @@ module.exports = {
     );
     await db.close();
 
-    return data
+    return data;
   },
   async show(userId) {
     const db = await Database();
