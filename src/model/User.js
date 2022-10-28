@@ -80,23 +80,14 @@ module.exports = {
 
     await db.close();
   },
-  async return_info(userEmail, includesPassword) {
+  async return_info(userEmail) {
     const db = await Database();
     const data = await db.all(
       `SELECT * FROM user WHERE email = "${userEmail}"`
     );
     await db.close();
 
-    if (includesPassword) {
-      return data[0];
-    }
-
-    return {
-      id: data[0].id,
-      name: data[0].name,
-      email: data[0].email,
-      avatar: data[0].avatar,
-    };
+    return data
   },
   async show(userId) {
     const db = await Database();

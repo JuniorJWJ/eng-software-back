@@ -25,29 +25,34 @@ module.exports = {
   },
   async log_user(req, res) {
     const userEmail = req.body.email
-    const user = await User.return_info(userEmail, true)
-    let dados = await User.return_info(userEmail, false)
-
+    const user = await User.return_info(userEmail)
+    console.log("user: ", user)
     if(user == null || user.length === 0){
         return res.status(400).json({
             erro: true,
             mensagem: "Erro: Usuário ou a senha incorreta! Nenhum usuário com este e-mail"
         });
     }
-    if(!(await bcrypt.compare(req.body.password, user.password))){
+    if(!(await bcrypt.compare(req.body.password, user[0].password))){
         return res.status(400).json({
             erro: true,
             mensagem: "Erro: Usuário ou a senha incorreta! Senha incorreta!"
         });
     }
-    var token = jwt.sign({id: user.id}, "D62ST92Y7A6V7K5C6W9ZU6W8KS3", {
+    var token = jwt.sign({id: user[0].id}, "D62ST92Y7A6V7K5C6W9ZU6W8KS3", { //need put this in .env
         expiresIn: '30m' // 7 dia
     });
+    const data = {
+      id: user[0].id,
+      name: user[0].name,
+      email: user[0].email,
+      avatar: user[0].avatar,
+    }
     return res.json({
         erro: false,
         mensagem: "Login realizado com sucesso!",
         token,
-        ...dados
+        ...data
     });
   },
   async show_users(req, res){
