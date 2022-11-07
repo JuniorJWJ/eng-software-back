@@ -8,9 +8,9 @@ const multerConfig = require("./config/multer");
 const route = express.Router();
 
 //User
-// route.get('/api/user/list', eAdmin, userController.show_users)
-route.get("/list", userController.show_users); // teste
-route.get("/api/user/list", eAdmin, userController.show_users);
+// route.get('/api/user/list', eAdmin, userController.listUsers)
+route.get("/list", userController.listUsers); // teste
+route.get("/api/user/list", eAdmin, userController.listUsers);
 route.get("/api/user/show/:id", eAdmin, userController.show);
 route.post(
   "/api/user/register",
