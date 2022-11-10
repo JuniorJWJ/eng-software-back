@@ -1,7 +1,7 @@
-const User = require('../model/User');
-const UserService = require('../services/UserService');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const User = require("../model/User");
+const UserService = require("../services/UserService");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   async create(request, response) {
@@ -11,7 +11,7 @@ module.exports = {
     if (existUser) {
       return response.status(200).json({
         erro: false,
-        mensagem: 'Já existe um usuário com esse email!',
+        mensagem: "Já existe um usuário com esse email!",
       });
     }
 
@@ -21,7 +21,7 @@ module.exports = {
       password: await bcrypt.hash(password, 8),
       avatar: request.file
         ? `http://localhost:3000/images/${request.file.filename}`
-        : '',
+        : "",
     };
 
     try {
@@ -29,7 +29,7 @@ module.exports = {
 
       response
         .status(201)
-        .json({ message: 'User inserido no sistema com sucesso' });
+        .json({ message: "User inserido no sistema com sucesso" });
     } catch (error) {
       response.status(500).json({ error: error });
     }
@@ -44,7 +44,7 @@ module.exports = {
       if (!user) {
         return response.status(500).json({
           erro: true,
-          mensagem: 'Email incorreto!',
+          mensagem: "Email incorreto!",
         });
       }
 
@@ -52,13 +52,13 @@ module.exports = {
       if (!isPasswordsEqual) {
         return response.status(500).json({
           erro: true,
-          mensagem: 'Senha incorreta!',
+          mensagem: "Senha incorreta!",
         });
       }
 
-      const token = jwt.sign({ id: user.id }, 'D62ST92Y7A6V7K5C6W9ZU6W8KS3', {
+      const token = jwt.sign({ id: user.id }, "D62ST92Y7A6V7K5C6W9ZU6W8KS3", {
         //need put this in .env
-        expiresIn: '30m', // 7 dia
+        expiresIn: "30m", // 7 dia
       });
 
       const data = {
@@ -70,7 +70,7 @@ module.exports = {
 
       return response.status(200).json({
         erro: false,
-        mensagem: 'Login realizado com sucesso!',
+        mensagem: "Login realizado com sucesso!",
         token,
         ...data,
       });
@@ -78,8 +78,23 @@ module.exports = {
       console.log(error);
       return response.status(400).json({
         erro: true,
-        mensagem: 'Erro ao realizar o login!',
+        mensagem: "Erro ao realizar o login!",
       });
+    }
+  },
+
+  async logout_user(request, response) {
+    // const token = jwt.sign({ id: user.id }, 'D62ST92Y7A6V7K5C6W9ZU6W8KS3', {
+    //   //need put this in .env
+    //   expiresIn: '30m', // 7 dia
+    // });
+    console.log("123");
+    try {
+      request.user.tokens = [];
+      await request.user.save();
+      response.send();
+    } catch (error) {
+      response.status(500).send();
     }
   },
 
@@ -94,7 +109,7 @@ module.exports = {
     } catch (error) {
       return response.status(400).json({
         erro: true,
-        mensagem: 'Nenhum usuário encontrado!',
+        mensagem: "Nenhum usuário encontrado!",
       });
     }
   },
@@ -114,12 +129,12 @@ module.exports = {
 
       return response.status(400).json({
         erro: true,
-        mensagem: 'Nenhum usuário encontrado!',
+        mensagem: "Nenhum usuário encontrado!",
       });
     } catch (error) {
       return response.status(400).json({
         erro: true,
-        mensagem: 'Erro ao buscar usuário!',
+        mensagem: "Erro ao buscar usuário!",
       });
     }
   },
@@ -132,12 +147,12 @@ module.exports = {
 
       return response.status(200).json({
         erro: false,
-        mensagem: 'Usuário removido com sucesso',
+        mensagem: "Usuário removido com sucesso",
       });
     } catch (error) {
       return response.status(400).json({
         erro: true,
-        mensagem: 'Erro ao remover usuário!',
+        mensagem: "Erro ao remover usuário!",
       });
     }
   },
@@ -152,7 +167,7 @@ module.exports = {
       password: await bcrypt.hash(password, 8),
       avatar: request.file
         ? `http://localhost:3000/images/${request.file.filename}`
-        : '',
+        : "",
     };
 
     if (!updatedUser.avatar) {
@@ -170,17 +185,17 @@ module.exports = {
             password: updatedUser.password,
             avatar: updatedUser.avatar,
           },
-        },
+        }
       );
 
       return response.status(200).json({
         erro: false,
-        mensagem: 'Usuário atualizado com sucesso!',
+        mensagem: "Usuário atualizado com sucesso!",
       });
     } catch (error) {
       return response.status(400).json({
         erro: true,
-        mensagem: 'Erro ao atualizar usuário!',
+        mensagem: "Erro ao atualizar usuário!",
       });
     }
   },
@@ -199,24 +214,24 @@ module.exports = {
       if (!isPasswordsEqual) {
         return response.status(500).json({
           erro: true,
-          mensagem: 'A antiga senha está incorreta!',
+          mensagem: "A antiga senha está incorreta!",
         });
       }
       const updatedPassword = await bcrypt.hash(newPassword, 8);
 
       await User.updateOne(
         { _id: userId },
-        { $set: { password: updatedPassword } },
+        { $set: { password: updatedPassword } }
       );
 
       return response.status(200).json({
         erro: false,
-        mensagem: 'Senha atualizada com sucesso!',
+        mensagem: "Senha atualizada com sucesso!",
       });
     } catch (error) {
       return response.status(400).json({
         erro: true,
-        mensagem: 'Erro ao atualizar a senha!',
+        mensagem: "Erro ao atualizar a senha!",
       });
     }
   },
