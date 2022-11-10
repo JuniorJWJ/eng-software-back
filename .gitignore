@@ -1,6 +1,6 @@
 node_modules/
-tmp/uploads/*
-!tmp/uploads/.gitkeep
+#tmp/uploads/*
+#!tmp/uploads/.gitkeep
 src/db/rocketq.sqlite
 .vscode
 .prettierrc.json
