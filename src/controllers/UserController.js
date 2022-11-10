@@ -1,38 +1,37 @@
 const User = require('../model/User');
+const UserService = require('../services/UserService');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 module.exports = {
   async create(request, response) {
-    const { name, password, email } = request.body;
-    const user = await User.getByEmail(email);
+    const { name, email, password } = request.body;
+    const existUser = await UserService.getByEmail(email);
 
-    if (user) {
+    if (existUser) {
       return response.status(200).json({
         erro: false,
         mensagem: 'Já existe um usuário com esse email!',
       });
     }
 
-    try {
-      await User.create({
-        name,
-        password: await bcrypt.hash(password, 8),
-        email,
-        avatar: request.file
-          ? `http://localhost:3000/images/${request.file.filename}`
-          : '',
-      });
+    const user = {
+      name,
+      email,
+      password: await bcrypt.hash(password, 8),
+      avatar: request.file
+        ? `http://localhost:3000/images/${request.file.filename}`
+        : '',
+    };
 
-      return response.status(200).json({
-        erro: false,
-        mensagem: 'User cadastrado com sucesso!',
-      });
+    try {
+      await User.create(user); // preciso ver se isso fica no services ou controller
+
+      response
+        .status(201)
+        .json({ message: 'User inserido no sistema com sucesso' });
     } catch (error) {
-      return response.status(400).json({
-        erro: true,
-        mensagem: 'User não cadastrado com sucesso!',
-      });
+      response.status(500).json({ error: error });
     }
   },
 
@@ -40,7 +39,7 @@ module.exports = {
     const { email, password } = request.body;
 
     try {
-      const user = await User.getByEmail(email);
+      const user = await UserService.getByEmail(email);
 
       if (!user) {
         return response.status(500).json({
@@ -57,13 +56,13 @@ module.exports = {
         });
       }
 
-      const token = jwt.sign({ id: user.id }, "D62ST92Y7A6V7K5C6W9ZU6W8KS3", {
+      const token = jwt.sign({ id: user.id }, 'D62ST92Y7A6V7K5C6W9ZU6W8KS3', {
         //need put this in .env
         expiresIn: '30m', // 7 dia
       });
 
       const data = {
-        id: user.id,
+        id: user._id,
         name: user.name,
         email: user.email,
         avatar: user.avatar,
@@ -76,6 +75,7 @@ module.exports = {
         ...data,
       });
     } catch (error) {
+      console.log(error);
       return response.status(400).json({
         erro: true,
         mensagem: 'Erro ao realizar o login!',
@@ -83,9 +83,24 @@ module.exports = {
     }
   },
 
+  async logout_user(request, response) {
+    // const token = jwt.sign({ id: user.id }, 'D62ST92Y7A6V7K5C6W9ZU6W8KS3', {
+    //   //need put this in .env
+    //   expiresIn: '30m', // 7 dia
+    // });
+    console.log('123');
+    try {
+      request.user.tokens = [];
+      await request.user.save();
+      response.send();
+    } catch (error) {
+      response.status(500).send();
+    }
+  },
+
   async listUsers(request, response) {
     try {
-      const users = await User.list();
+      const users = await User.find();
 
       return response.status(200).json({
         erro: false,
@@ -100,10 +115,10 @@ module.exports = {
   },
 
   async show(request, response) {
-    const { userId } = request;
+    const userId = request.params.id;
 
     try {
-      const user = await User.show(userId);
+      const user = await User.findOne({ _id: userId });
 
       if (user) {
         return response.status(200).json({
@@ -128,7 +143,7 @@ module.exports = {
     const userId = request.params.id;
 
     try {
-      await User.delete(userId);
+      await User.deleteOne({ _id: userId });
 
       return response.status(200).json({
         erro: false,
@@ -141,31 +156,42 @@ module.exports = {
       });
     }
   },
-  
+
   async update(request, response) {
     const userId = request.params.id;
-    const { name, email } = request.body;
+    const { name, email, password } = request.body;
 
-    var updatedUser = {
+    const updatedUser = {
       name,
       email,
+      password: await bcrypt.hash(password, 8),
       avatar: request.file
         ? `http://localhost:3000/images/${request.file.filename}`
         : '',
     };
 
+    if (!updatedUser.avatar) {
+      const userBDteste = await User.findOne({ _id: userId });
+      updatedUser.avatar = userBDteste.avatar;
+    }
+    console.log(updatedUser);
     try {
-      if (!updatedUser.avatar) {
-        const userBDteste = await User.show(userId);
-        updatedUser.avatar = userBDteste.avatar;
+      await User.updateOne(
+        { _id: userId },
+        {
+          $set: {
+            name: updatedUser.name,
+            email: updatedUser.email,
+            password: updatedUser.password,
+            avatar: updatedUser.avatar,
+          },
+        },
+      );
 
-        return response.status(200).json({
-          erro: false,
-          mensagem: 'Usuário atualizado com sucesso!',
-        });
-      }
-
-      await User.update(updatedUser, userId);
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Usuário atualizado com sucesso!',
+      });
     } catch (error) {
       return response.status(400).json({
         erro: true,
@@ -180,7 +206,7 @@ module.exports = {
     const { password, newPassword } = request.body;
 
     try {
-      const user = await User.getById(userId);
+      const user = await User.findOne({ _id: userId });
 
       const isPasswordsEqual = await bcrypt.compare(password, user.password);
       if (!isPasswordsEqual) {
@@ -189,10 +215,12 @@ module.exports = {
           mensagem: 'A antiga senha está incorreta!',
         });
       }
-
       const updatedPassword = await bcrypt.hash(newPassword, 8);
 
-      await User.update_password(updatedPassword, userId);
+      await User.updateOne(
+        { _id: userId },
+        { $set: { password: updatedPassword } },
+      );
 
       return response.status(200).json({
         erro: false,
