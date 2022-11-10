@@ -1,0 +1,36 @@
+const express = require('express');
+require('dotenv').config();
+const server = express();
+const route = require('./route');
+const path = require('path');
+const { resolve } = require('path');
+const cors = require('cors');
+const corsMiddleware = require('.././middlewares/cors.js');
+const mongoose = require('mongoose');
+
+server.use(cors());
+// server.set('views', path.join(__dirname, 'views'));
+server.use(express.urlencoded({ extended: true }));
+server.use(
+  '/images',
+  express.static(resolve(__dirname, '..', 'tmp', 'uploads')),
+);
+server.use(express.json());
+
+server.use(route);
+// require('../src/db/init.js');
+// server.listen(3000, () => console.log('RODANDO'));
+// const dbUser = process.env.DB_USER;
+const dbUser = 'DbUserEngSoftware';
+// const dbPassword = process.env.DB_PASS;
+const dbPassword = 'zr2JNPr79Sh1HHAA';
+
+mongoose
+  .connect(
+    `mongodb+srv://${dbUser}:${dbPassword}@cluster-eng-software.j94ua61.mongodb.net/?retryWrites=true&w=majority`,
+  )
+  .then(() => {
+    server.listen(3000, () => console.log('RODANDO'));
+    console.log('Conectou ao banco!');
+  })
+  .catch(err => console.log(err));
