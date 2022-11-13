@@ -84,18 +84,18 @@ module.exports = {
   },
 
   async logout_user(request, response) {
-    // const token = jwt.sign({ id: user.id }, 'D62ST92Y7A6V7K5C6W9ZU6W8KS3', {
-    //   //need put this in .env
-    //   expiresIn: '30m', // 7 dia
-    // });
-    console.log('123');
-    try {
-      request.user.tokens = [];
-      await request.user.save();
-      response.send();
-    } catch (error) {
-      response.status(500).send();
-    }
+    // // const token = jwt.sign({ id: user.id }, 'D62ST92Y7A6V7K5C6W9ZU6W8KS3', {
+    // //   //need put this in .env
+    // //   expiresIn: '30m', // 7 dia
+    // // });
+    // console.log('123');
+    // try {
+    //   request.user.tokens = [];
+    //   await request.user.save();
+    //   response.send();
+    // } catch (error) {
+    //   response.status(500).send();
+    // }
   },
 
   async listUsers(request, response) {

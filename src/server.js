@@ -18,11 +18,8 @@ server.use(
 server.use(express.json());
 
 server.use(route);
-// require('../src/db/init.js');
-// server.listen(3000, () => console.log('RODANDO'));
-// const dbUser = process.env.DB_USER;
+
 const dbUser = 'DbUserEngSoftware';
-// const dbPassword = process.env.DB_PASS;
 const dbPassword = 'zr2JNPr79Sh1HHAA';
 
 mongoose

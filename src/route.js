@@ -4,6 +4,7 @@ const userController = require('./controllers/UserController');
 const { eAdmin } = require('../middlewares/auth');
 const multer = require('multer');
 const multerConfig = require('./config/multer');
+const StoreController = require('./controllers/StoreController');
 const route = express.Router();
 
 //User
@@ -25,5 +26,13 @@ route.put(
   userController.update_password,
 );
 route.delete('/api/user/delete/:id', eAdmin, userController.delete);
+
+//Store
+route.post(
+  '/api/store/register/:id',
+  multer(multerConfig).single('file'),
+  StoreController.create,
+);
+route.get('/api/store/list', eAdmin, StoreController.listStores);
 
 module.exports = route;
