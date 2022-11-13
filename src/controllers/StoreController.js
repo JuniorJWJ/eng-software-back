@@ -42,4 +42,45 @@ module.exports = {
       });
     }
   },
+  async show(request, response) {
+    const storeId = request.params.id;
+
+    try {
+      const store = await Store.findOne({ _id: storeId });
+
+      if (store) {
+        return response.status(200).json({
+          erro: false,
+          store,
+        });
+      }
+
+      return response.status(400).json({
+        erro: true,
+        mensagem: 'Nenhuma loja encontrada!',
+      });
+    } catch (error) {
+      return response.status(400).json({
+        erro: true,
+        mensagem: 'Erro ao buscar loja!',
+      });
+    }
+  },
+  async delete(request, response) {
+    const storeID = request.params.id;
+
+    try {
+      await Store.deleteOne({ _id: storeID });
+
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Loja removida com sucesso',
+      });
+    } catch (error) {
+      return response.status(400).json({
+        erro: true,
+        mensagem: 'Erro ao remover loja!',
+      });
+    }
+  },
 };
