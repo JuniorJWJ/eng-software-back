@@ -35,6 +35,7 @@ route.post(
 );
 route.get('/api/store/list', eAdmin, StoreController.listStores);
 route.get('/api/store/show/:id', eAdmin, StoreController.show);
-route.delete('/api/store/delete/:id', eAdmin, StoreController.delete);
+route.delete('/api/store/delete/:idUser/:id', eAdmin, StoreController.delete);
+route.put('/api/store/update/:idUser/:id', eAdmin, StoreController.update);
 
 module.exports = route;

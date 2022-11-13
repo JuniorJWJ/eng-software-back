@@ -27,6 +27,7 @@ module.exports = {
       response.status(500).json({ error: error });
     }
   },
+
   async listStores(request, response) {
     try {
       const stores = await Store.find();
@@ -42,6 +43,7 @@ module.exports = {
       });
     }
   },
+
   async show(request, response) {
     const storeId = request.params.id;
 
@@ -66,6 +68,7 @@ module.exports = {
       });
     }
   },
+
   async delete(request, response) {
     const storeID = request.params.id;
 
@@ -80,6 +83,53 @@ module.exports = {
       return response.status(400).json({
         erro: true,
         mensagem: 'Erro ao remover loja!',
+      });
+    }
+  },
+
+  async update(request, response) {
+    console.log(request.body);
+    const storeId = request.params.id;
+    const { name, description, soldQuantity } = request.body;
+    const idUser = request.params.idUser;
+
+    const updatedStore = {
+      idUser,
+      name,
+      description,
+      image: request.file
+        ? `http://localhost:3000/images/${request.file.filename}`
+        : '',
+      soldQuantity,
+    };
+
+    if (!updatedStore.image) {
+      const storeBDteste = await Store.findOne({ _id: storeId });
+      updatedStore.image = storeBDteste.image;
+    }
+
+    console.log(updatedStore);
+    try {
+      await Store.updateOne(
+        { _id: storeId },
+        {
+          $set: {
+            name: updatedStore.name,
+            description: updatedStore.description,
+            image: updatedStore.image,
+            soldQuantity: updatedStore.soldQuantity,
+          },
+        },
+      );
+
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Loja atualizada com sucesso!',
+      });
+    } catch (error) {
+      return response.status(400).json({
+        erro: true,
+        mensagem: 'Erro ao atualizar Loja!',
       });
     }
   },
