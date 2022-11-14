@@ -8,6 +8,7 @@ const Product = mongoose.model('Product', {
   type: String,
   quantity: Integer,
   price: Double,
+  soldQuantity: Integer,
 });
 
 module.exports = Product;
