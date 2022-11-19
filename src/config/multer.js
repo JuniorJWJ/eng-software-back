@@ -21,7 +21,7 @@ const storageTypes = {
   }),
   s3: multerS3({
     s3: new aws.S3({ region: 'us-west-2' }),
-    bucket: process.env.BUCKET_NAME,
+    bucket: process.env.ES_BUCKET_NAME,
     contentType: multerS3.AUTO_CONTENT_TYPE,
     acl: 'private',
     key: (req, file, cb) => {
@@ -38,7 +38,7 @@ const storageTypes = {
 
 module.exports = {
   dest: path.resolve(__dirname, '..', '..', 'tmp', 'uploads'),
-  storage: storageTypes[process.env.STORAGE_TYPE],
+  storage: storageTypes[process.env.ES_STORAGE_TYPE],
   limits: {
     fileSize: 2 * 1024 * 1024,
   },
