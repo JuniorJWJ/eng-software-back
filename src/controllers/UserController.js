@@ -2,6 +2,8 @@ const User = require('../model/User');
 const UserService = require('../services/UserService');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+// const aws = require("aws-sdk");
+// const s3 = new aws.S3();
 
 module.exports = {
   async create(request, response) {

@@ -12,6 +12,11 @@ const route = express.Router();
 route.get('/list', UserController.listUsers); // teste
 route.get('/api/user/list', eAdmin, UserController.listUsers);
 route.get('/api/user/show/:id', eAdmin, UserController.show);
+// route.post(
+//   '/api/user/register',
+//   multer(multerConfig).single('file'),
+//   UserController.create,
+// );
 route.post(
   '/api/user/register',
   multer(multerConfig).single('file'),
