@@ -5,16 +5,20 @@ module.exports = {
   async create(request, response) {
     const { name, description } = request.body;
     const idUser = request.params.id;
-    const soldQuantity = 0;
+    const amountSold = 0;
+    const amountRates = 0;
+    const products = [];
 
     const store = {
       idUser,
       name,
       description,
-      image: request.file
+      avatar: request.file
         ? `http://localhost:3000/images/${request.file.filename}`
         : '',
-      soldQuantity,
+      amountSold,
+      amountRates,
+      products,
     };
 
     try {
@@ -32,9 +36,18 @@ module.exports = {
     try {
       const stores = await Store.find();
 
+      const data = stores.map(store => ({
+        id: store._id,
+        name: store.name,
+        amountRates: store.amountRates,
+        image: store.image,
+        amountSold: store.amountSold,
+        products: store.products,
+      }));
+
       return response.status(200).json({
         erro: false,
-        stores,
+        data,
       });
     } catch (error) {
       return response.status(400).json({
@@ -50,10 +63,19 @@ module.exports = {
     try {
       const store = await Store.findOne({ _id: storeId });
 
+      const data = {
+        id: store._id,
+        name: store.name,
+        amountRates: store.amountRates,
+        image: store.image,
+        amountSold: store.amountSold,
+        products: store.products,
+      };
+
       if (store) {
         return response.status(200).json({
           erro: false,
-          store,
+          ...data,
         });
       }
 
@@ -97,10 +119,12 @@ module.exports = {
       idUser,
       name,
       description,
-      image: request.file
+      avatar: request.file
         ? `http://localhost:3000/images/${request.file.filename}`
         : '',
-      soldQuantity,
+      amountSold,
+      amountRates,
+      products,
     };
 
     if (!updatedStore.image) {

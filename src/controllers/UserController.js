@@ -2,8 +2,6 @@ const User = require('../model/User');
 const UserService = require('../services/UserService');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-// const aws = require("aws-sdk");
-// const s3 = new aws.S3();
 
 module.exports = {
   async create(request, response) {
@@ -22,13 +20,12 @@ module.exports = {
       email,
       password: await bcrypt.hash(password, 8),
       avatar: request.file
-        ? `http://localhost:3000/images/${request.file.filename}`
+        ? `http://localhost:3000/images/${request.file.key}`
         : '',
     };
 
     try {
-      await User.create(user); // preciso ver se isso fica no services ou controller
-
+      await User.create(user);
       response
         .status(201)
         .json({ message: 'User inserido no sistema com sucesso' });
@@ -104,9 +101,17 @@ module.exports = {
     try {
       const users = await User.find();
 
+      const data = users.map(user => ({
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      }));
+
+      // console.log(data);
       return response.status(200).json({
         erro: false,
-        users,
+        data,
       });
     } catch (error) {
       return response.status(400).json({
@@ -122,10 +127,17 @@ module.exports = {
     try {
       const user = await User.findOne({ _id: userId });
 
+      const data = {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      };
+
       if (user) {
         return response.status(200).json({
           erro: false,
-          user,
+          ...data,
         });
       }
 
@@ -176,7 +188,7 @@ module.exports = {
       const userBDteste = await User.findOne({ _id: userId });
       updatedUser.avatar = userBDteste.avatar;
     }
-    console.log(updatedUser);
+
     try {
       await User.updateOne(
         { _id: userId },
