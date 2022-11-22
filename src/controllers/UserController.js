@@ -3,6 +3,18 @@ const UserService = require('../services/UserService');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+////aws
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+
+s3 = new S3Client({
+  region: process.env.AWS_DEFAULT_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+
 module.exports = {
   async create(request, response) {
     const { name, email, password } = request.body;
@@ -19,9 +31,9 @@ module.exports = {
       name,
       email,
       password: await bcrypt.hash(password, 8),
-      avatar: request.file
-        ? `http://localhost:3000/images/${request.file.key}`
-        : '',
+      imageURL: request.file.location,
+      imageSize: request.file.size,
+      imageKey: request.file.key,
     };
 
     try {
@@ -245,6 +257,26 @@ module.exports = {
         erro: true,
         mensagem: 'Erro ao atualizar a senha!',
       });
+    }
+  },
+  async getSignedUrl(request, response) {
+    const userId = request.params.id;
+    let user = '';
+    try {
+      user = await User.findById(userId);
+    } catch (error) {
+      response.send('Arquivo não encontrado!');
+    } finally {
+      if (user) {
+        const command = new GetObjectCommand({
+          Bucket: process.env.BUCKET_NAME,
+          Key: user['imageKey'],
+        });
+        const url = await getSignedUrl(s3, command, { expiresIn: 15 * 60 }); // expires in seconds
+        response.json({ url: url });
+      } else {
+        response.send('Arquivo não encontrado em nossa base da dados');
+      }
     }
   },
 };
