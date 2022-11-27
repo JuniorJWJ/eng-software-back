@@ -35,6 +35,7 @@ route.get('/api/user/signed-url/:id', eAdmin, UserController.getSignedUrl);
 //Store
 route.post(
   '/api/store/register/:id',
+  eAdmin,
   multer(multerConfig).single('file'),
   StoreController.create,
 );
