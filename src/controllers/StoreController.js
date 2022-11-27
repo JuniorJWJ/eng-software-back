@@ -1,14 +1,43 @@
 const Store = require('../model/Store');
 const StoreService = require('../services/StoreService');
+const User = require('../model/User');
+
+////aws
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+
+s3 = new S3Client({
+  region: process.env.AWS_DEFAULT_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
 
 module.exports = {
   async create(request, response) {
-    const { name, description } = request.body;
-    const idUser = request.params.id;
+    const { name } = request.body;
+    const idUser = request.params.id.toString();
     const amountSold = 0;
     const amountRates = 0;
     const products = [];
     const userHaveStore = await StoreService.userHaveStore(idUser);
+
+    if (idUser.length < 24 || idUser.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID não é válido!',
+      });
+    }
+
+    const existUser = await User.findOne({ _id: idUser });
+
+    if (!existUser) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Esse Usuário não existe!',
+      });
+    }
 
     if (userHaveStore) {
       return response.status(200).json({
@@ -19,13 +48,12 @@ module.exports = {
     const store = {
       idUser,
       name,
-      description,
+      amountRates,
+      amountSold,
+      products,
       imageURL: request.file.location,
       imageSize: request.file.size,
       imageKey: request.file.key,
-      amountSold,
-      amountRates,
-      products,
     };
 
     try {
@@ -125,18 +153,19 @@ module.exports = {
     const updatedStore = {
       idUser,
       name,
-      description,
-      avatar: request.file
-        ? `http://localhost:3000/images/${request.file.filename}`
-        : '',
-      amountSold,
       amountRates,
+      amountSold,
       products,
+      imageURL: request.file.location,
+      imageSize: request.file.size,
+      imageKey: request.file.key,
     };
 
     if (!updatedStore.image) {
       const storeBDteste = await Store.findOne({ _id: storeId });
-      updatedStore.image = storeBDteste.image;
+      updatedUser.imageURL = storeBDteste.imageURL;
+      updatedUser.imageSize = storeBDteste.imageSize;
+      updatedUser.imageKey = storeBDteste.imageKey;
     }
 
     console.log(updatedStore);
@@ -146,9 +175,13 @@ module.exports = {
         {
           $set: {
             name: updatedStore.name,
-            description: updatedStore.description,
+            amountRates: updatedStore.amountRates,
             image: updatedStore.image,
-            soldQuantity: updatedStore.soldQuantity,
+            amountSold: updatedStore.amountSold,
+            products: updatedStore.products,
+            imageURL: updatedStore.imageURL,
+            imageSize: updatedStore.imageSize,
+            imageKey: updatedStore.imageKey,
           },
         },
       );
