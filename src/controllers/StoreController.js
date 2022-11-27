@@ -8,14 +8,21 @@ module.exports = {
     const amountSold = 0;
     const amountRates = 0;
     const products = [];
+    const userHaveStore = await StoreService.userHaveStore(idUser);
 
+    if (userHaveStore) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Já existe uma loja desse usuário criada!',
+      });
+    }
     const store = {
       idUser,
       name,
       description,
-      avatar: request.file
-        ? `http://localhost:3000/images/${request.file.filename}`
-        : '',
+      imageURL: request.file.location,
+      imageSize: request.file.size,
+      imageKey: request.file.key,
       amountSold,
       amountRates,
       products,
