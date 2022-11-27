@@ -42,7 +42,12 @@ route.post(
 route.get('/api/store/list', eAdmin, StoreController.listStores);
 route.get('/api/store/show/:id', eAdmin, StoreController.show);
 route.delete('/api/store/delete/:idUser/:id', eAdmin, StoreController.delete);
-route.put('/api/store/update/:idUser/:id', eAdmin, StoreController.update);
+route.put(
+  '/api/store/update/:idUser/:id',
+  eAdmin,
+  multer(multerConfig).single('file'),
+  StoreController.update,
+);
 
 /////////////////download S3
 

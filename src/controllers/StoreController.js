@@ -45,6 +45,7 @@ module.exports = {
         mensagem: 'Já existe uma loja desse usuário criada!',
       });
     }
+
     const store = {
       idUser,
       name,
@@ -75,9 +76,11 @@ module.exports = {
         id: store._id,
         name: store.name,
         amountRates: store.amountRates,
-        image: store.image,
         amountSold: store.amountSold,
         products: store.products,
+        imageURL: store.location,
+        imageSize: store.size,
+        imageKey: store.key,
       }));
 
       return response.status(200).json({
@@ -127,10 +130,31 @@ module.exports = {
   },
 
   async delete(request, response) {
-    const storeID = request.params.id;
+    const storeId = request.params.id.toString();
+    const idUser = request.params.idUser;
+    const userHaveStore = await StoreService.userHaveStore(idUser);
+
+    if (!userHaveStore) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Esse usuário não tem loja cadastrada!',
+      });
+    }
+    if (storeId.length < 24 || storeId.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID não é válido!',
+      });
+    }
+    if (!(await Store.findById(storeId))) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Essa loja não existe no sistema!',
+      });
+    }
 
     try {
-      await Store.deleteOne({ _id: storeID });
+      await Store.deleteOne({ _id: storeId });
 
       return response.status(200).json({
         erro: false,
@@ -145,10 +169,29 @@ module.exports = {
   },
 
   async update(request, response) {
-    console.log(request.body);
-    const storeId = request.params.id;
-    const { name, description, soldQuantity } = request.body;
+    const { name, amountRates, amountSold, products } = request.body;
+    const storeId = request.params.id.toString();
     const idUser = request.params.idUser;
+    const userHaveStore = await StoreService.userHaveStore(idUser);
+
+    if (!userHaveStore) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Esse usuário não tem loja cadastrada!',
+      });
+    }
+    if (storeId.length < 24 || storeId.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID não é válido!',
+      });
+    }
+    if (!(await Store.findById(storeId))) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Essa loja não existe no sistema!',
+      });
+    }
 
     const updatedStore = {
       idUser,
@@ -161,7 +204,7 @@ module.exports = {
       imageKey: request.file.key,
     };
 
-    if (!updatedStore.image) {
+    if (!updatedStore.imageURL) {
       const storeBDteste = await Store.findOne({ _id: storeId });
       updatedUser.imageURL = storeBDteste.imageURL;
       updatedUser.imageSize = storeBDteste.imageSize;
