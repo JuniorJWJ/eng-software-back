@@ -18,8 +18,12 @@ route.post(
   UserController.create,
 );
 route.post('/api/login', UserController.log_user);
-route.post('/api/logout', UserController.logout_user);
-route.put('/api/user/update/:id', eAdmin, UserController.update);
+route.put(
+  '/api/user/update/:id',
+  eAdmin,
+  multer(multerConfig).single('file'),
+  UserController.update,
+);
 route.put(
   '/api/user/reset-password/:id',
   eAdmin,

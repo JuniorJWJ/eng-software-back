@@ -10,7 +10,6 @@ const corsMiddleware = require('.././middlewares/cors.js');
 const mongoose = require('mongoose');
 
 server.use(cors());
-// server.set('views', path.join(__dirname, 'views'));
 server.use(express.urlencoded({ extended: true }));
 server.use(morgan('dev'));
 server.use(

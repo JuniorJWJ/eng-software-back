@@ -76,7 +76,8 @@ module.exports = {
         id: user._id,
         name: user.name,
         email: user.email,
-        avatar: user.avatar,
+        imageURL: user.imageURL,
+        imageKey: user.imageKey,
       };
 
       return response.status(200).json({
@@ -94,21 +95,6 @@ module.exports = {
     }
   },
 
-  async logout_user(request, response) {
-    // // const token = jwt.sign({ id: user.id }, 'D62ST92Y7A6V7K5C6W9ZU6W8KS3', {
-    // //   //need put this in .env
-    // //   expiresIn: '30m', // 7 dia
-    // // });
-    // console.log('123');
-    // try {
-    //   request.user.tokens = [];
-    //   await request.user.save();
-    //   response.send();
-    // } catch (error) {
-    //   response.status(500).send();
-    // }
-  },
-
   async listUsers(request, response) {
     try {
       const users = await User.find();
@@ -117,10 +103,10 @@ module.exports = {
         id: user._id,
         name: user.name,
         email: user.email,
-        avatar: user.avatar,
+        imageURL: user.imageURL,
+        imageKey: user.imageKey,
       }));
 
-      // console.log(data);
       return response.status(200).json({
         erro: false,
         data,
@@ -143,7 +129,8 @@ module.exports = {
         id: user._id,
         name: user.name,
         email: user.email,
-        avatar: user.avatar,
+        imageURL: user.imageURL,
+        imageKey: user.imageKey,
       };
 
       if (user) {
@@ -191,14 +178,16 @@ module.exports = {
       name,
       email,
       password: await bcrypt.hash(password, 8),
-      avatar: request.file
-        ? `http://localhost:3000/images/${request.file.filename}`
-        : '',
+      imageURL: request.file.location,
+      imageSize: request.file.size,
+      imageKey: request.file.key,
     };
 
-    if (!updatedUser.avatar) {
+    if (!updatedUser.imageURL) {
       const userBDteste = await User.findOne({ _id: userId });
-      updatedUser.avatar = userBDteste.avatar;
+      updatedUser.imageURL = userBDteste.imageURL;
+      updatedUser.imageSize = userBDteste.imageSize;
+      updatedUser.imageKey = userBDteste.imageKey;
     }
 
     try {
@@ -209,7 +198,9 @@ module.exports = {
             name: updatedUser.name,
             email: updatedUser.email,
             password: updatedUser.password,
-            avatar: updatedUser.avatar,
+            imageURL: updatedUser.imageURL,
+            imageSize: updatedUser.imageSize,
+            imageKey: updatedUser.imageKey,
           },
         },
       );
