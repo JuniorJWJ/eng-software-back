@@ -2,13 +2,19 @@ const mongoose = require('mongoose');
 
 const Product = mongoose.model('Product', {
   idStore: String,
-  name: String,
+  title: String,
+  price: Number,
+  promotionalPrice: Number,
   description: String,
-  image: String,
+  category: String,
   type: String,
-  quantity: Integer,
-  price: Double,
-  soldQuantity: Integer,
+  stars: Number, //
+  stock: Number,
+  amountSold: Number, //
+  amountRates: Number, //
+  imageURL: String,
+  imageSize: Number,
+  imageKey: String,
 });
 
 module.exports = Product;

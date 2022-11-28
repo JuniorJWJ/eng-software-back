@@ -7,6 +7,7 @@ const StoreController = require('./controllers/StoreController');
 const multer = require('multer');
 const multerConfig = require('./config/multer');
 const AWSV2 = require('./config/aws');
+const ProductController = require('./controllers/ProductController');
 
 //User
 route.get('/list', UserController.listUsers); // teste
@@ -49,6 +50,14 @@ route.put(
   StoreController.update,
 );
 route.get('/api/store/signed-url/:id', eAdmin, StoreController.getSignedUrl);
+
+//Product
+route.post(
+  '/api/product/register/:id',
+  eAdmin,
+  multer(multerConfig).single('file'),
+  ProductController.create,
+);
 
 /////////////////download S3
 
