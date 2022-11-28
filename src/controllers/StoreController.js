@@ -58,7 +58,7 @@ module.exports = {
     };
 
     try {
-      await Store.create(store); // preciso ver se isso fica no services ou controller
+      await Store.create(store);
 
       response
         .status(201)
@@ -78,9 +78,9 @@ module.exports = {
         amountRates: store.amountRates,
         amountSold: store.amountSold,
         products: store.products,
-        imageURL: store.location,
-        imageSize: store.size,
-        imageKey: store.key,
+        imageURL: store.imageURL,
+        imageSize: store.imageSize,
+        imageKey: store.imageKey,
       }));
 
       return response.status(200).json({
@@ -105,9 +105,11 @@ module.exports = {
         id: store._id,
         name: store.name,
         amountRates: store.amountRates,
-        image: store.image,
         amountSold: store.amountSold,
         products: store.products,
+        imageURL: store.imageURL,
+        imageSize: store.imageSize,
+        imageKey: store.imageKey,
       };
 
       if (store) {
@@ -238,6 +240,28 @@ module.exports = {
         erro: true,
         mensagem: 'Erro ao atualizar Loja!',
       });
+    }
+  },
+
+  async getSignedUrl(request, response) {
+    const storeId = request.params.id;
+    let store = '';
+    try {
+      store = await Store.findById(storeId);
+      console.log(store);
+    } catch (error) {
+      response.send('Arquivo não encontrado!');
+    } finally {
+      if (store) {
+        const command = new GetObjectCommand({
+          Bucket: process.env.BUCKET_NAME,
+          Key: store['imageKey'],
+        });
+        const url = await getSignedUrl(s3, command, { expiresIn: 15 * 60 }); // expires in seconds
+        response.json({ url: url });
+      } else {
+        response.send('Arquivo não encontrado em nossa base da dados');
+      }
     }
   },
 };

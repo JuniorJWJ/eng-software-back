@@ -48,6 +48,7 @@ route.put(
   multer(multerConfig).single('file'),
   StoreController.update,
 );
+route.get('/api/store/signed-url/:id', eAdmin, StoreController.getSignedUrl);
 
 /////////////////download S3
 

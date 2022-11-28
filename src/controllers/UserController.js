@@ -196,7 +196,6 @@ module.exports = {
         {
           $set: {
             name: updatedUser.name,
-            email: updatedUser.email,
             password: updatedUser.password,
             imageURL: updatedUser.imageURL,
             imageSize: updatedUser.imageSize,
@@ -250,6 +249,7 @@ module.exports = {
       });
     }
   },
+
   async getSignedUrl(request, response) {
     const userId = request.params.id;
     let user = '';
