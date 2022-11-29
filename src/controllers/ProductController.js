@@ -42,12 +42,12 @@ module.exports = {
     if (!storeExist) {
       return response.status(200).json({
         erro: false,
-        mensagem: 'Essa Loja não existe!',
+        mensagem: 'Essa loja não existe!',
       });
     }
 
     const store = {
-      idStore: String,
+      idStore,
       title,
       price,
       promotionalPrice,
@@ -71,6 +71,145 @@ module.exports = {
         .json({ message: 'Produto inserido no sistema com sucesso' });
     } catch (error) {
       response.status(500).json({ error: error });
+    }
+  },
+
+  async listProducts(request, response) {
+    try {
+      const products = await Product.find();
+
+      const data = products.map(product => ({
+        id: product._id,
+        idStore: product.idStore,
+        title: product.title,
+        price: product.price,
+        promotionalPrice: product.promotionalPrice,
+        description: product.description,
+        category: product.category,
+        type: product.type,
+        stars: product.stars,
+        stock: product.stock,
+        amountSold: product.amountSold,
+        amountRates: product.amountRates,
+        imageURL: product.imageURL,
+        imageSize: product.imageSize,
+        imageKey: product.imageKey,
+      }));
+
+      return response.status(200).json({
+        erro: false,
+        data,
+      });
+    } catch (error) {
+      return response.status(400).json({
+        erro: true,
+        mensagem: 'Nenhum produto encontrado!',
+      });
+    }
+  },
+
+  async show(request, response) {
+    const productId = request.params.id;
+
+    try {
+      const product = await Product.findOne({ _id: productId });
+
+      const data = {
+        id: product._id,
+        idStore: product.idStore,
+        title: product.title,
+        price: product.price,
+        promotionalPrice: product.promotionalPrice,
+        description: product.description,
+        category: product.category,
+        type: product.type,
+        stars: product.stars,
+        stock: product.stock,
+        amountSold: product.amountSold,
+        amountRates: product.amountRates,
+        imageURL: product.imageURL,
+        imageSize: product.imageSize,
+        imageKey: product.imageKey,
+      };
+
+      if (product) {
+        return response.status(200).json({
+          erro: false,
+          ...data,
+        });
+      }
+
+      return response.status(400).json({
+        erro: true,
+        mensagem: 'Nenhum produto encontrado!',
+      });
+    } catch (error) {
+      return response.status(400).json({
+        erro: true,
+        mensagem: 'Erro ao buscar produto!',
+      });
+    }
+  },
+
+  async delete(request, response) {
+    const productId = request.params.id.toString();
+    const idStore = request.params.idStore.toString();
+    const storeHaveProduct = await ProductService.storeHaveProduct(idStore);
+    // const verifyStoreProduct = await ProductService.verifyStoreProduct(idStore);
+
+    // if (!verifyStoreProduct) {
+    //   return response.status(200).json({
+    //     erro: false,
+    //     mensagem: 'Este produto não pertence a esta loja!',
+    //   });
+    // }
+
+    if (idStore.length < 24 || idStore.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID de loja não é válido!',
+      });
+    }
+
+    const storeExist = await Store.findOne({ _id: idStore });
+
+    if (!storeExist) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Essa loja não existe!',
+      });
+    }
+    if (!storeHaveProduct) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Essa loja não tem produto cadastrado!',
+      });
+    }
+    if (productId.length < 24 || productId.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID não é válido!',
+      });
+    }
+    if (!(await Product.findById(productId))) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Esse produto não existe no sistema!',
+      });
+    }
+
+    try {
+      await Product.deleteOne({ _id: productId });
+
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Produto removido com sucesso',
+      });
+    } catch (error) {
+      return response.status(400).json({
+        erro: true,
+        mensagem: 'Erro ao remover produto!',
+      });
     }
   },
 };

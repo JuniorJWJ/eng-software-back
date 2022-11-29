@@ -58,6 +58,13 @@ route.post(
   multer(multerConfig).single('file'),
   ProductController.create,
 );
+route.get('/api/product/list', eAdmin, ProductController.listProducts);
+route.get('/api/product/show/:id', eAdmin, ProductController.show);
+route.delete(
+  '/api/product/delete/:idStore/:id',
+  eAdmin,
+  ProductController.delete,
+);
 
 /////////////////download S3
 

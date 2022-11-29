@@ -74,6 +74,7 @@ module.exports = {
 
       const data = stores.map(store => ({
         id: store._id,
+        idUser: store.idUser,
         name: store.name,
         amountRates: store.amountRates,
         amountSold: store.amountSold,
