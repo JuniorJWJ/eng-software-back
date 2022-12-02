@@ -11,16 +11,16 @@ module.exports = {
     }
   },
   async verifyStoreProduct(idStore) {
-    // try {
-    const product = await Product.findOne({ idStore: idStore });
-    console.log(product);
-    if (product.idStore == idStore) {
-      return true;
-    } else {
-      return false;
+    try {
+      const product = await Product.findOne({ idStore: idStore });
+      console.log(product);
+      if (product.idStore == idStore) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.log({ error: error });
     }
-    // } catch (error) {
-    //   console.log({ error: error });
-    // }
   },
 };

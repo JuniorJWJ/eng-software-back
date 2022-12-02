@@ -52,17 +52,18 @@ module.exports = {
       amountRates,
       amountSold,
       products,
-      imageURL: request.file.location,
-      imageSize: request.file.size,
-      imageKey: request.file.key,
+      imageURL: request.file ? request.file.location : '',
+      imageKey: request.file ? request.file.key : '',
     };
 
     try {
       await Store.create(store);
 
-      response
-        .status(201)
-        .json({ message: 'Loja inserida no sistema com sucesso' });
+      return response.status(201).json({
+        erro: false,
+        store,
+        message: 'Loja inserida no sistema com sucesso',
+      });
     } catch (error) {
       response.status(500).json({ error: error });
     }
@@ -101,6 +102,42 @@ module.exports = {
 
     try {
       const store = await Store.findOne({ _id: storeId });
+
+      const data = {
+        id: store._id,
+        name: store.name,
+        amountRates: store.amountRates,
+        amountSold: store.amountSold,
+        products: store.products,
+        imageURL: store.imageURL,
+        imageSize: store.imageSize,
+        imageKey: store.imageKey,
+      };
+
+      if (store) {
+        return response.status(200).json({
+          erro: false,
+          ...data,
+        });
+      }
+
+      return response.status(400).json({
+        erro: true,
+        mensagem: 'Nenhuma loja encontrada!',
+      });
+    } catch (error) {
+      return response.status(400).json({
+        erro: true,
+        mensagem: 'Erro ao buscar loja!',
+      });
+    }
+  },
+
+  async showStoreByUser(request, response) {
+    const userID = request.params.id;
+
+    try {
+      const store = await Store.findOne({ idUser: userID });
 
       const data = {
         id: store._id,
@@ -199,12 +236,8 @@ module.exports = {
     const updatedStore = {
       idUser,
       name,
-      amountRates,
-      amountSold,
-      products,
-      imageURL: request.file.location,
-      imageSize: request.file.size,
-      imageKey: request.file.key,
+      imageURL: request.file ? request.file.location : '',
+      imageKey: request.file ? request.file.key : '',
     };
 
     if (!updatedStore.imageURL) {

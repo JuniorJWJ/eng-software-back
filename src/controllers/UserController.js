@@ -31,9 +31,8 @@ module.exports = {
       name,
       email,
       password: await bcrypt.hash(password, 8),
-      imageURL: request.file.location,
-      imageSize: request.file.size,
-      imageKey: request.file.key,
+      imageURL: request.file ? request.file.location : '',
+      imageKey: request.file ? request.file.key : '',
     };
 
     try {

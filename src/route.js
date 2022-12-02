@@ -42,6 +42,7 @@ route.post(
 );
 route.get('/api/store/list', eAdmin, StoreController.listStores);
 route.get('/api/store/show/:id', eAdmin, StoreController.show);
+route.get('/api/storeuser/show/:id', eAdmin, StoreController.showStoreByUser);
 route.delete('/api/store/delete/:idUser/:id', eAdmin, StoreController.delete);
 route.put(
   '/api/store/update/:idUser/:id',

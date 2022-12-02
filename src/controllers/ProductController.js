@@ -42,7 +42,7 @@ module.exports = {
     if (!storeExist) {
       return response.status(200).json({
         erro: false,
-        mensagem: 'Essa loja não existe!',
+        mensagem: 'Esse Produto não existe!',
       });
     }
 
