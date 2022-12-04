@@ -59,7 +59,6 @@ module.exports = {
       amountSold,
       amountRates,
       imageURL: request.file.location,
-      imageSize: request.file.size,
       imageKey: request.file.key,
     };
 
@@ -92,7 +91,6 @@ module.exports = {
         amountSold: product.amountSold,
         amountRates: product.amountRates,
         imageURL: product.imageURL,
-        imageSize: product.imageSize,
         imageKey: product.imageKey,
       }));
 
@@ -128,7 +126,6 @@ module.exports = {
         amountSold: product.amountSold,
         amountRates: product.amountRates,
         imageURL: product.imageURL,
-        imageSize: product.imageSize,
         imageKey: product.imageKey,
       };
 
@@ -155,14 +152,14 @@ module.exports = {
     const productId = request.params.id.toString();
     const idStore = request.params.idStore.toString();
     const storeHaveProduct = await ProductService.storeHaveProduct(idStore);
-    // const verifyStoreProduct = await ProductService.verifyStoreProduct(idStore);
+    const verifyStoreProduct = await ProductService.verifyStoreProduct(idStore);
 
-    // if (!verifyStoreProduct) {
-    //   return response.status(200).json({
-    //     erro: false,
-    //     mensagem: 'Este produto não pertence a esta loja!',
-    //   });
-    // }
+    if (!verifyStoreProduct) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este produto não pertence a esta loja!',
+      });
+    }
 
     if (idStore.length < 24 || idStore.length > 24) {
       return response.status(200).json({

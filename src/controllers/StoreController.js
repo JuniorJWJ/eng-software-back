@@ -81,7 +81,6 @@ module.exports = {
         amountSold: store.amountSold,
         products: store.products,
         imageURL: store.imageURL,
-        imageSize: store.imageSize,
         imageKey: store.imageKey,
       }));
 
@@ -110,7 +109,6 @@ module.exports = {
         amountSold: store.amountSold,
         products: store.products,
         imageURL: store.imageURL,
-        imageSize: store.imageSize,
         imageKey: store.imageKey,
       };
 
@@ -146,7 +144,6 @@ module.exports = {
         amountSold: store.amountSold,
         products: store.products,
         imageURL: store.imageURL,
-        imageSize: store.imageSize,
         imageKey: store.imageKey,
       };
 
@@ -173,6 +170,7 @@ module.exports = {
     const storeId = request.params.id.toString();
     const idUser = request.params.idUser;
     const userHaveStore = await StoreService.userHaveStore(idUser);
+    const verifyUserStore = await StoreService.verifyUserStore(idUser);
 
     if (!userHaveStore) {
       return response.status(200).json({
@@ -193,6 +191,12 @@ module.exports = {
       });
     }
 
+    if (!verifyUserStore) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Esta loja não pertence a esse usuário!',
+      });
+    }
     try {
       await Store.deleteOne({ _id: storeId });
 
@@ -209,7 +213,7 @@ module.exports = {
   },
 
   async update(request, response) {
-    const { name, amountRates, amountSold, products } = request.body;
+    const { name } = request.body;
     const storeId = request.params.id.toString();
     const idUser = request.params.idUser;
     const userHaveStore = await StoreService.userHaveStore(idUser);
@@ -234,7 +238,6 @@ module.exports = {
     }
 
     const updatedStore = {
-      idUser,
       name,
       imageURL: request.file ? request.file.location : '',
       imageKey: request.file ? request.file.key : '',
@@ -243,7 +246,6 @@ module.exports = {
     if (!updatedStore.imageURL) {
       const storeBDteste = await Store.findOne({ _id: storeId });
       updatedUser.imageURL = storeBDteste.imageURL;
-      updatedUser.imageSize = storeBDteste.imageSize;
       updatedUser.imageKey = storeBDteste.imageKey;
     }
 
@@ -254,12 +256,7 @@ module.exports = {
         {
           $set: {
             name: updatedStore.name,
-            amountRates: updatedStore.amountRates,
-            image: updatedStore.image,
-            amountSold: updatedStore.amountSold,
-            products: updatedStore.products,
             imageURL: updatedStore.imageURL,
-            imageSize: updatedStore.imageSize,
             imageKey: updatedStore.imageKey,
           },
         },

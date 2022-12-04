@@ -178,14 +178,12 @@ module.exports = {
       email,
       password: await bcrypt.hash(password, 8),
       imageURL: request.file.location,
-      imageSize: request.file.size,
       imageKey: request.file.key,
     };
 
     if (!updatedUser.imageURL) {
       const userBDteste = await User.findOne({ _id: userId });
       updatedUser.imageURL = userBDteste.imageURL;
-      updatedUser.imageSize = userBDteste.imageSize;
       updatedUser.imageKey = userBDteste.imageKey;
     }
 
@@ -197,7 +195,6 @@ module.exports = {
             name: updatedUser.name,
             password: updatedUser.password,
             imageURL: updatedUser.imageURL,
-            imageSize: updatedUser.imageSize,
             imageKey: updatedUser.imageKey,
           },
         },
