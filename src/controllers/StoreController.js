@@ -245,8 +245,8 @@ module.exports = {
 
     if (!updatedStore.imageURL) {
       const storeBDteste = await Store.findOne({ _id: storeId });
-      updatedUser.imageURL = storeBDteste.imageURL;
-      updatedUser.imageKey = storeBDteste.imageKey;
+      updatedStore.imageURL = storeBDteste.imageURL;
+      updatedStore.imageKey = storeBDteste.imageKey;
     }
 
     console.log(updatedStore);
