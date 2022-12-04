@@ -171,14 +171,12 @@ module.exports = {
 
   async update(request, response) {
     const userId = request.params.id;
-    const { name, email, password } = request.body;
+    const { name } = request.body;
 
     const updatedUser = {
       name,
-      email,
-      password: await bcrypt.hash(password, 8),
-      imageURL: request.file.location,
-      imageKey: request.file.key,
+      imageURL: request.file ? request.file.location : '',
+      imageKey: request.file ? request.file.key : '',
     };
 
     if (!updatedUser.imageURL) {
