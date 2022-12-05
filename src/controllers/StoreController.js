@@ -168,20 +168,27 @@ module.exports = {
 
   async delete(request, response) {
     const storeId = request.params.id.toString();
-    const idUser = request.params.idUser;
+    const idUser = request.params.idUser.toString();
     const userHaveStore = await StoreService.userHaveStore(idUser);
-    const verifyUserStore = await StoreService.verifyUserStore(idUser);
+    const verifyUserStore = await StoreService.verifyUserStore(idUser, storeId);
 
+    if (idUser.length < 24 || idUser.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID de usuário não é válido!',
+      });
+    }
+
+    if (storeId.length < 24 || storeId.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID de loja não é válido!',
+      });
+    }
     if (!userHaveStore) {
       return response.status(200).json({
         erro: false,
         mensagem: 'Esse usuário não tem loja cadastrada!',
-      });
-    }
-    if (storeId.length < 24 || storeId.length > 24) {
-      return response.status(200).json({
-        erro: false,
-        mensagem: 'Este ID não é válido!',
       });
     }
     if (!(await Store.findById(storeId))) {
@@ -190,13 +197,13 @@ module.exports = {
         mensagem: 'Essa loja não existe no sistema!',
       });
     }
-
     if (!verifyUserStore) {
       return response.status(200).json({
         erro: false,
         mensagem: 'Esta loja não pertence a esse usuário!',
       });
     }
+
     try {
       await Store.deleteOne({ _id: storeId });
 
@@ -217,23 +224,36 @@ module.exports = {
     const storeId = request.params.id.toString();
     const idUser = request.params.idUser;
     const userHaveStore = await StoreService.userHaveStore(idUser);
+    const verifyUserStore = await StoreService.verifyUserStore(idUser, storeId);
 
+    if (idUser.length < 24 || idUser.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID de usuário não é válido!',
+      });
+    }
+    if (storeId.length < 24 || storeId.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID de loja não é válido!',
+      });
+    }
     if (!userHaveStore) {
       return response.status(200).json({
         erro: false,
         mensagem: 'Esse usuário não tem loja cadastrada!',
       });
     }
-    if (storeId.length < 24 || storeId.length > 24) {
-      return response.status(200).json({
-        erro: false,
-        mensagem: 'Este ID não é válido!',
-      });
-    }
     if (!(await Store.findById(storeId))) {
       return response.status(200).json({
         erro: false,
         mensagem: 'Essa loja não existe no sistema!',
+      });
+    }
+    if (!verifyUserStore) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Esta loja não pertence a esse usuário!',
       });
     }
 

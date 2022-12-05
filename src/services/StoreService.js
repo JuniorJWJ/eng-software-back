@@ -10,9 +10,9 @@ module.exports = {
       res.status(500).json({ error: error });
     }
   },
-  async verifyUserStore(idUser) {
+  async verifyUserStore(idUser, storeId) {
     try {
-      const store = await Store.findOne({ idUser: idUser });
+      const store = await Store.findOne({ _id: storeId });
 
       if (store) {
         if (store.idUser == idUser) {

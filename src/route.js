@@ -66,6 +66,12 @@ route.delete(
   eAdmin,
   ProductController.delete,
 );
+route.put(
+  '/api/product/update/:idStore/:id',
+  eAdmin,
+  multer(multerConfig).single('file'),
+  ProductController.update,
+);
 
 /////////////////download S3
 

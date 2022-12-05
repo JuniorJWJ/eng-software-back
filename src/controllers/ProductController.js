@@ -152,7 +152,10 @@ module.exports = {
     const productId = request.params.id.toString();
     const idStore = request.params.idStore.toString();
     const storeHaveProduct = await ProductService.storeHaveProduct(idStore);
-    const verifyStoreProduct = await ProductService.verifyStoreProduct(idStore);
+    const verifyStoreProduct = await ProductService.verifyStoreProduct(
+      idStore,
+      productId,
+    );
 
     if (!verifyStoreProduct) {
       return response.status(200).json({
@@ -165,6 +168,12 @@ module.exports = {
       return response.status(200).json({
         erro: false,
         mensagem: 'Este ID de loja não é válido!',
+      });
+    }
+    if (productId.length < 24 || productId.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID de produto não é válido!',
       });
     }
 
@@ -206,6 +215,113 @@ module.exports = {
       return response.status(400).json({
         erro: true,
         mensagem: 'Erro ao remover produto!',
+      });
+    }
+  },
+
+  async update(request, response) {
+    const {
+      title,
+      price,
+      promotionalPrice,
+      description,
+      category,
+      type,
+      stock,
+    } = request.body;
+    const productId = request.params.id.toString();
+    const idStore = request.params.idStore.toString();
+    const storeHaveProduct = await ProductService.storeHaveProduct(idStore);
+    const verifyStoreProduct = await ProductService.verifyStoreProduct(
+      idStore,
+      productId,
+    );
+
+    if (!verifyStoreProduct) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este produto não pertence a esta loja!',
+      });
+    }
+
+    if (idStore.length < 24 || idStore.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID de loja não é válido!',
+      });
+    }
+    if (productId.length < 24 || productId.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID de produto não é válido!',
+      });
+    }
+
+    const storeExist = await Store.findOne({ _id: idStore });
+
+    if (!storeExist) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Essa loja não existe!',
+      });
+    }
+    if (!storeHaveProduct) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Essa loja não tem produto cadastrado!',
+      });
+    }
+    if (productId.length < 24 || productId.length > 24) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Este ID não é válido!',
+      });
+    }
+    if (!(await Product.findById(productId))) {
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Esse produto não existe no sistema!',
+      });
+    }
+
+    const updatedProduct = {
+      title,
+      price,
+      promotionalPrice,
+      description,
+      category,
+      type,
+      stock,
+      imageURL: request.file ? request.file.location : '',
+      imageKey: request.file ? request.file.key : '',
+    };
+
+    try {
+      await Product.updateOne(
+        { _id: productId },
+        {
+          $set: {
+            title: updatedProduct.title,
+            price: updatedProduct.price,
+            promotionalPrice: updatedProduct.promotionalPrice,
+            description: updatedProduct.description,
+            category: updatedProduct.category,
+            type: updatedProduct.type,
+            stock: updatedProduct.stock,
+            imageURL: updatedProduct.imageURL,
+            imageKey: updatedProduct.imageKey,
+          },
+        },
+      );
+
+      return response.status(200).json({
+        erro: false,
+        mensagem: 'Produto atualizado com sucesso',
+      });
+    } catch (error) {
+      return response.status(400).json({
+        erro: true,
+        mensagem: 'Erro ao atualizar produto!',
       });
     }
   },

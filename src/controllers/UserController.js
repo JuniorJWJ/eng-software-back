@@ -191,7 +191,6 @@ module.exports = {
         {
           $set: {
             name: updatedUser.name,
-            password: updatedUser.password,
             imageURL: updatedUser.imageURL,
             imageKey: updatedUser.imageKey,
           },
