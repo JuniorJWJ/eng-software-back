@@ -8,6 +8,7 @@ const multer = require('multer');
 const multerConfig = require('./config/multer');
 const AWSV2 = require('./config/aws');
 const ProductController = require('./controllers/ProductController');
+const ImageController = require('./controllers/ImageController');
 
 //User
 route.get('/list', UserController.listUsers); // teste
@@ -72,7 +73,12 @@ route.put(
   multer(multerConfig).single('file'),
   ProductController.update,
 );
-
+//Image
+route.post(
+  '/api/image/register',
+  multer(multerConfig).single('file'),
+  ImageController.create,
+);
 /////////////////download S3
 
 // route.get('/api/user/signed-url/:id', eAdmin, async (request, response) => {

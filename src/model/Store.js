@@ -6,9 +6,7 @@ const Store = mongoose.model('Store', {
   amountRates: Number,
   amountSold: Number,
   products: Array,
-  imageURL: String,
-  imageSize: Number,
-  imageKey: String,
+  image: String,
 });
 
 module.exports = Store;

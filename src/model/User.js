@@ -4,9 +4,7 @@ const User = mongoose.model('User', {
   name: String,
   email: String,
   password: String,
-  imageURL: String,
-  imageSize: Number,
-  imageKey: String,
+  image: String,
 });
 
 module.exports = User;

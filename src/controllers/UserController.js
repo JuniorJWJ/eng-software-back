@@ -17,7 +17,7 @@ s3 = new S3Client({
 
 module.exports = {
   async create(request, response) {
-    const { name, email, password } = request.body;
+    const { name, email, password, image } = request.body;
     const existUser = await UserService.getByEmail(email);
 
     if (existUser) {
@@ -31,8 +31,7 @@ module.exports = {
       name,
       email,
       password: await bcrypt.hash(password, 8),
-      imageURL: request.file ? request.file.location : '',
-      imageKey: request.file ? request.file.key : '',
+      image,
     };
 
     try {
@@ -75,8 +74,7 @@ module.exports = {
         id: user._id,
         name: user.name,
         email: user.email,
-        imageURL: user.imageURL,
-        imageKey: user.imageKey,
+        image: user.image,
       };
 
       return response.status(200).json({
@@ -102,8 +100,7 @@ module.exports = {
         id: user._id,
         name: user.name,
         email: user.email,
-        imageURL: user.imageURL,
-        imageKey: user.imageKey,
+        image: user.image,
       }));
 
       return response.status(200).json({
@@ -128,8 +125,7 @@ module.exports = {
         id: user._id,
         name: user.name,
         email: user.email,
-        imageURL: user.imageURL,
-        imageKey: user.imageKey,
+        image: user.image,
       };
 
       if (user) {
@@ -171,18 +167,16 @@ module.exports = {
 
   async update(request, response) {
     const userId = request.params.id;
-    const { name } = request.body;
+    const { name, image } = request.body;
 
     const updatedUser = {
       name,
-      imageURL: request.file ? request.file.location : '',
-      imageKey: request.file ? request.file.key : '',
+      image,
     };
 
-    if (!updatedUser.imageURL) {
+    if (!updatedUser.image) {
       const userBDteste = await User.findOne({ _id: userId });
-      updatedUser.imageURL = userBDteste.imageURL;
-      updatedUser.imageKey = userBDteste.imageKey;
+      updatedUser.image = userBDteste.image;
     }
 
     try {
@@ -191,8 +185,7 @@ module.exports = {
         {
           $set: {
             name: updatedUser.name,
-            imageURL: updatedUser.imageURL,
-            imageKey: updatedUser.imageKey,
+            image: updatedUser.image,
           },
         },
       );

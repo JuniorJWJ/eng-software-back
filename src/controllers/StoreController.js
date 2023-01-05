@@ -16,7 +16,7 @@ s3 = new S3Client({
 
 module.exports = {
   async create(request, response) {
-    const { name } = request.body;
+    const { name, image } = request.body;
     const idUser = request.params.id.toString();
     const amountSold = 0;
     const amountRates = 0;
@@ -52,8 +52,7 @@ module.exports = {
       amountRates,
       amountSold,
       products,
-      imageURL: request.file ? request.file.location : '',
-      imageKey: request.file ? request.file.key : '',
+      image,
     };
 
     try {
@@ -80,8 +79,7 @@ module.exports = {
         amountRates: store.amountRates,
         amountSold: store.amountSold,
         products: store.products,
-        imageURL: store.imageURL,
-        imageKey: store.imageKey,
+        image: store.image,
       }));
 
       return response.status(200).json({
@@ -108,8 +106,7 @@ module.exports = {
         amountRates: store.amountRates,
         amountSold: store.amountSold,
         products: store.products,
-        imageURL: store.imageURL,
-        imageKey: store.imageKey,
+        image: store.image,
       };
 
       if (store) {
@@ -143,8 +140,7 @@ module.exports = {
         amountRates: store.amountRates,
         amountSold: store.amountSold,
         products: store.products,
-        imageURL: store.imageURL,
-        imageKey: store.imageKey,
+        image: store.image,
       };
 
       if (store) {
@@ -220,7 +216,7 @@ module.exports = {
   },
 
   async update(request, response) {
-    const { name } = request.body;
+    const { name, image } = request.body;
     const storeId = request.params.id.toString();
     const idUser = request.params.idUser;
     const userHaveStore = await StoreService.userHaveStore(idUser);
@@ -259,14 +255,12 @@ module.exports = {
 
     const updatedStore = {
       name,
-      imageURL: request.file ? request.file.location : '',
-      imageKey: request.file ? request.file.key : '',
+      image,
     };
 
-    if (!updatedStore.imageURL) {
+    if (!updatedStore.image) {
       const storeBDteste = await Store.findOne({ _id: storeId });
-      updatedStore.imageURL = storeBDteste.imageURL;
-      updatedStore.imageKey = storeBDteste.imageKey;
+      updatedStore.image = storeBDteste.image;
     }
 
     console.log(updatedStore);
@@ -276,8 +270,7 @@ module.exports = {
         {
           $set: {
             name: updatedStore.name,
-            imageURL: updatedStore.imageURL,
-            imageKey: updatedStore.imageKey,
+            image: updatedStore.image,
           },
         },
       );

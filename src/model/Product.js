@@ -12,9 +12,7 @@ const Product = mongoose.model('Product', {
   stock: Number,
   amountSold: Number, //
   amountRates: Number, //
-  imageURL: String,
-  imageSize: Number,
-  imageKey: String,
+  image: String,
 });
 
 module.exports = Product;

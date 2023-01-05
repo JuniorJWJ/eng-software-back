@@ -24,6 +24,7 @@ module.exports = {
       category,
       type,
       stock,
+      image,
     } = request.body;
     const idStore = request.params.id.toString();
     const stars = 0;
@@ -58,8 +59,7 @@ module.exports = {
       stock,
       amountSold,
       amountRates,
-      imageURL: request.file.location,
-      imageKey: request.file.key,
+      image,
     };
 
     try {
@@ -90,8 +90,7 @@ module.exports = {
         stock: product.stock,
         amountSold: product.amountSold,
         amountRates: product.amountRates,
-        imageURL: product.imageURL,
-        imageKey: product.imageKey,
+        image: product.image,
       }));
 
       return response.status(200).json({
@@ -125,8 +124,7 @@ module.exports = {
         stock: product.stock,
         amountSold: product.amountSold,
         amountRates: product.amountRates,
-        imageURL: product.imageURL,
-        imageKey: product.imageKey,
+        image: product.image,
       };
 
       if (product) {
@@ -228,6 +226,7 @@ module.exports = {
       category,
       type,
       stock,
+      image,
     } = request.body;
     const productId = request.params.id.toString();
     const idStore = request.params.idStore.toString();
@@ -292,8 +291,7 @@ module.exports = {
       category,
       type,
       stock,
-      imageURL: request.file ? request.file.location : '',
-      imageKey: request.file ? request.file.key : '',
+      image,
     };
 
     try {
@@ -308,8 +306,7 @@ module.exports = {
             category: updatedProduct.category,
             type: updatedProduct.type,
             stock: updatedProduct.stock,
-            imageURL: updatedProduct.imageURL,
-            imageKey: updatedProduct.imageKey,
+            image: updatedProduct.image,
           },
         },
       );
